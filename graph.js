@@ -73,6 +73,7 @@ class Graph {
 
       for (let neighbor of current.adjacent) {
         if (!seen.has(neighbor)) {
+          toVisitQueue.push(neighbor);
           seen.add(neighbor);
           visited.push(neighbor.value);
         }
@@ -82,32 +83,26 @@ class Graph {
   }
 
   /** find the distance of the shortest path from the start vertex to the end vertex */
-  distanceOfShortestPath(
-    start,
-    end,
-    seen = new Set([start]),
-    minLength = null,
-    length = 0
-  ) {
+  distanceOfShortestPath(start, end) {
     if (start === end) {
-      minLength = minLength && minLength < length ? minLength : length;
+      return 0;
     }
 
-    for (let neighbor of start.adjacent) {
-      console.log("seen", seen);
-      if (!seen.has(neighbor)) {
-        seen.add(neighbor);
-        length = length + 1;
-        return this.distanceOfShortestPath(
-          neighbor,
-          end,
-          seen,
-          minLength,
-          length
-        );
+    let toVisitQueue = [[start, 0]];
+    let seen = new Set([start]);
+
+    while (toVisitQueue.length > 0) {
+      let [current, length] = toVisitQueue.shift();
+      if (current === end) {
+        return length;
+      }
+      for (let neighbor of current.adjacent) {
+        if (!seen.has(neighbor)) {
+          toVisitQueue.push([neighbor, length + 1]);
+          seen.add(neighbor);
+        }
       }
     }
-    return minLength;
   }
 }
 
